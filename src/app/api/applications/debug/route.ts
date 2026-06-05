@@ -18,12 +18,12 @@ export async function GET() {
     auth.setCredentials({ access_token: accessToken });
     const gmail = google.gmail({ version: 'v1', auth });
 
-    const query = 'from:me (subject:(internship OR application OR recruiter OR hiring OR role OR opportunity OR position OR career OR job OR referral OR interview) OR "applied" OR "application") newer_than:30d';
+    const query = 'from:me newer_than:30d';
 
     const response = await gmail.users.threads.list({
       userId: 'me',
       q: query,
-      maxResults: 20,
+      maxResults: 50,
     });
 
     const threads = response.data.threads || [];
