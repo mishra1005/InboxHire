@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/session';
 import { prisma, hasDb } from '@/lib/db';
 import { fetchGmailThreads } from '@/lib/gmailService';
+import { isBlacklisted } from '@/lib/emailParser';
 
 // Standard mock data used for the Demo / fallback mode
 const INITIAL_MOCK_APPLICATIONS = [
@@ -182,6 +183,22 @@ export async function GET(request: Request) {
           lastMessageDate: thread.lastActivity,
         },
       });
+    }
+
+    // 2.5 Clean up existing blacklisted applications in the database
+    const existingApps = await prisma.application.findMany({
+      where: { userId: session.user.id },
+      include: { threads: true },
+    });
+
+    for (const app of existingApps) {
+      const contactEmail = app.contactEmail || '';
+      const subject = app.threads[0]?.subject || '';
+      if (isBlacklisted(contactEmail, subject)) {
+        await prisma.application.delete({
+          where: { id: app.id },
+        });
+      }
     }
 
     // 3. Fetch final consolidated list from Database
