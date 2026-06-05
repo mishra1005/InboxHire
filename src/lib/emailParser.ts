@@ -72,6 +72,77 @@ export function isJobRelated(subject: string, bodySnippet: string): boolean {
   return JOB_KEYWORDS.some((keyword) => content.includes(keyword));
 }
 
+const BLACKLISTED_DOMAINS = [
+  'github.com',
+  'gitlab.com',
+  'linkedin.com',
+  'medium.com',
+  'slack.com',
+  'discord.com',
+  'zoom.us',
+  'twitter.com',
+  'x.com',
+  'facebook.com',
+  'instagram.com'
+];
+
+const BLACKLISTED_EMAIL_KEYWORDS = [
+  'noreply',
+  'no-reply',
+  'notification',
+  'alert',
+  'newsletter',
+  'billing',
+  'invoice',
+  'support',
+  'info',
+  'bounce',
+  'marketing',
+  'security'
+];
+
+const BLACKLISTED_SUBJECT_KEYWORDS = [
+  'security alert',
+  'pull request',
+  'issue',
+  'starred',
+  'welcome to',
+  'billing',
+  'invoice',
+  'receipt',
+  'transaction',
+  'verification code',
+  'one-time password',
+  ' otp ',
+  'login alert',
+  'sign-in',
+  'newsletter',
+  'subscription'
+];
+
+export function isBlacklisted(email: string, subject: string): boolean {
+  const emailLower = email.toLowerCase();
+  const subjectLower = subject.toLowerCase();
+
+  // Check domains
+  const domain = emailLower.split('@')[1] || '';
+  if (BLACKLISTED_DOMAINS.some(d => domain === d || domain.endsWith('.' + d))) {
+    return true;
+  }
+
+  // Check email user part / address keywords
+  if (BLACKLISTED_EMAIL_KEYWORDS.some(kw => emailLower.includes(kw))) {
+    return true;
+  }
+
+  // Check subject keywords
+  if (BLACKLISTED_SUBJECT_KEYWORDS.some(kw => subjectLower.includes(kw))) {
+    return true;
+  }
+
+  return false;
+}
+
 export function classifyThread(
   subject: string,
   messages: Array<{ from: string; to: string; snippet: string; date: Date }>,
@@ -90,6 +161,12 @@ export function classifyThread(
   // We determine who the "contact" is.
   let contactHeader = isSentByUser ? firstMsg.to : firstMsg.from;
   const contact = parseContactHeader(contactHeader);
+
+  // Filter out automated or blacklisted emails early
+  if (isBlacklisted(contact.email, cleanSub)) {
+    return null;
+  }
+
   const domain = contact.email.split('@')[1] || '';
   const companyName = cleanCompanyName(domain);
 

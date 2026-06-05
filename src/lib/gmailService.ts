@@ -6,13 +6,13 @@ export async function fetchGmailThreads(accessToken: string, userEmail: string):
   auth.setCredentials({ access_token: accessToken });
   const gmail = google.gmail({ version: 'v1', auth });
 
-  const query = 'subject:(internship OR application OR recruiter OR hiring OR role OR opportunity OR position OR career OR job OR referral OR interview) OR "applied" OR "application"';
+  const query = '(subject:(internship OR application OR recruiter OR hiring OR role OR opportunity OR position OR career OR job OR referral OR interview) OR "applied" OR "application") newer_than:30d';
   
   try {
     const response = await gmail.users.threads.list({
       userId: 'me',
       q: query,
-      maxResults: 20, // Sync the latest 20 conversations for performance
+      maxResults: 100, // Sync the latest 100 conversations to cover 30 days
     });
 
     const threads = response.data.threads || [];
