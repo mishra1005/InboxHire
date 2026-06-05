@@ -6,7 +6,7 @@ export async function fetchGmailThreads(accessToken: string, userEmail: string):
   auth.setCredentials({ access_token: accessToken });
   const gmail = google.gmail({ version: 'v1', auth });
 
-  const query = '(subject:(internship OR application OR recruiter OR hiring OR role OR opportunity OR position OR career OR job OR referral OR interview) OR "applied" OR "application") newer_than:30d';
+  const query = 'from:me (subject:(internship OR application OR recruiter OR hiring OR role OR opportunity OR position OR career OR job OR referral OR interview) OR "applied" OR "application") newer_than:30d';
   
   try {
     const response = await gmail.users.threads.list({

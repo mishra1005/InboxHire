@@ -87,8 +87,6 @@ const BLACKLISTED_DOMAINS = [
 ];
 
 const BLACKLISTED_EMAIL_KEYWORDS = [
-  'noreply',
-  'no-reply',
   'notification',
   'alert',
   'newsletter',
@@ -154,12 +152,16 @@ export function classifyThread(
   const firstMsg = messages[0];
   const isSentByUser = firstMsg.from.toLowerCase().includes(userEmail.toLowerCase());
   
+  // Enforce tracking only sent emails, not received initiations
+  if (!isSentByUser) {
+    return null;
+  }
+
   // Clean subject
   const cleanSub = subject.replace(/^(re|fw|fwd):/i, '').trim();
 
-  // If first message is not sent by user, it might be an inbound recruiter email.
-  // We determine who the "contact" is.
-  let contactHeader = isSentByUser ? firstMsg.to : firstMsg.from;
+  // Since it was sent by user, the contact is the recipient (to)
+  let contactHeader = firstMsg.to;
   const contact = parseContactHeader(contactHeader);
 
   // Filter out automated or blacklisted emails early
@@ -168,7 +170,16 @@ export function classifyThread(
   }
 
   const domain = contact.email.split('@')[1] || '';
-  const companyName = cleanCompanyName(domain);
+  let companyName = cleanCompanyName(domain);
+
+  // If the email address has a variant of no-reply, do not consider it a Cold Email/Direct Outreach
+  if (contact.email.toLowerCase().includes('no.reply') || 
+      contact.email.toLowerCase().includes('no-reply') || 
+      contact.email.toLowerCase().includes('noreply')) {
+    if (companyName === 'Direct Outreach') {
+      companyName = 'System Notification';
+    }
+  }
 
   // Check if thread is job-related
   const bodyCombined = messages.map(m => m.snippet).join(' ');
