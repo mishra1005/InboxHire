@@ -144,6 +144,19 @@ export function isBlacklisted(email: string, subject: string): boolean {
   return false;
 }
 
+export function applyFollowUpLogic(
+  status: ParsedJobThread['status'],
+  lastMessageFromUser: boolean,
+  daysElapsed: number
+): ParsedJobThread['status'] {
+  if (lastMessageFromUser && status !== 'Rejected' && status !== 'Interview') {
+    if (daysElapsed >= 3) {
+      return 'Follow Up Required';
+    }
+  }
+  return status;
+}
+
 export function classifyThread(
   subject: string,
   messages: Array<{ from: string; to: string; snippet: string; date: Date }>,
@@ -228,11 +241,7 @@ export function classifyThread(
 
   // Follow Up rules apply if the last message in the thread is from the user
   // and there has been no reply after it for 3, 7, or 14 days
-  if (lastMessageFromUser && status !== 'Rejected' && status !== 'Interview') {
-    if (daysElapsed >= 3) {
-      status = 'Follow Up Required';
-    }
-  }
+  status = applyFollowUpLogic(status, lastMessageFromUser, daysElapsed);
 
   return {
     gmailThreadId: '', // To be filled by caller

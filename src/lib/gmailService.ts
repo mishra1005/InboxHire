@@ -1,5 +1,6 @@
 import { google } from 'googleapis';
 import { classifyThread, ParsedJobThread } from './emailParser';
+import { classifyThreadWithAI } from './aiClassifier';
 
 export async function fetchGmailThreads(accessToken: string, userEmail: string): Promise<ParsedJobThread[]> {
   const auth = new google.auth.OAuth2();
@@ -51,7 +52,15 @@ export async function fetchGmailThreads(accessToken: string, userEmail: string):
         if (formattedMessages.length === 0) continue;
 
         const subject = formattedMessages[0].subject || 'No Subject';
-        const parsed = classifyThread(subject, formattedMessages, userEmail);
+        
+        let parsed = null;
+        if (process.env.GEMINI_API_KEY) {
+          parsed = await classifyThreadWithAI(subject, formattedMessages, userEmail);
+        }
+
+        if (!parsed) {
+          parsed = classifyThread(subject, formattedMessages, userEmail);
+        }
 
         if (parsed) {
           parsed.gmailThreadId = t.id;
