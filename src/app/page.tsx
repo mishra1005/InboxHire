@@ -219,7 +219,13 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer className="w-full max-w-7xl mx-auto px-6 py-8 flex flex-col md:flex-row justify-between items-center border-t border-zinc-900/60 text-zinc-500 text-sm z-10 gap-4">
-        <span>© {new Date().getFullYear()} InboxHire. All rights reserved. Your Gmail search CRM.</span>
+        <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4">
+          <span>© {new Date().getFullYear()} InboxHire. All rights reserved. Your Gmail search CRM.</span>
+          <span className="hidden md:inline text-zinc-800">•</span>
+          <a href="/privacy" className="hover:text-zinc-300 transition-colors underline underline-offset-4 decoration-zinc-800">
+            Privacy Policy
+          </a>
+        </div>
         
         <div className="flex items-center space-x-6">
           <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="hover:text-zinc-300 transition-colors">
