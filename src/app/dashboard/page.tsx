@@ -58,7 +58,7 @@ export default function DashboardPage() {
       .then((res) => res.json())
       .then((data) => {
         if (!data.session) {
-          window.location.href = '/';
+          window.location.href = '/home';
         } else {
           setSession(data.session);
           // 2. Fetch Applications initial sync
@@ -66,7 +66,7 @@ export default function DashboardPage() {
         }
       })
       .catch(() => {
-        window.location.href = '/';
+        window.location.href = '/home';
       });
   }, []);
 

@@ -9,11 +9,11 @@ export async function GET(request: NextRequest) {
   const error = searchParams.get('error');
 
   if (error) {
-    return NextResponse.redirect(new URL(`/?error=${encodeURIComponent(error)}`, request.url));
+    return NextResponse.redirect(new URL(`/home?error=${encodeURIComponent(error)}`, request.url));
   }
 
   if (!code) {
-    return NextResponse.redirect(new URL('/?error=missing_code', request.url));
+    return NextResponse.redirect(new URL('/home?error=missing_code', request.url));
   }
 
   try {
@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
   } catch (err: any) {
     console.error('OAuth Callback Error:', err);
     return NextResponse.redirect(
-      new URL(`/?error=${encodeURIComponent(err.message || 'auth_failed')}`, request.url)
+      new URL(`/home?error=${encodeURIComponent(err.message || 'auth_failed')}`, request.url)
     );
   }
 }

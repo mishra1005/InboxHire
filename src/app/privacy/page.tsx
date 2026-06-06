@@ -16,7 +16,7 @@ export default function PrivacyPolicy() {
 
       {/* Header */}
       <header className="w-full max-w-5xl mx-auto px-6 py-6 flex justify-between items-center z-10">
-        <Link href="/" className="flex items-center space-x-3 group">
+        <Link href="/home" className="flex items-center space-x-3 group">
           <div className="bg-indigo-600 p-2.5 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-600/30 group-hover:bg-indigo-500 transition-colors">
             <Mail className="w-5 h-5 text-white" />
           </div>
@@ -26,7 +26,7 @@ export default function PrivacyPolicy() {
         </Link>
 
         <Link
-          href="/"
+          href="/home"
           className="inline-flex items-center space-x-2 text-sm font-medium text-zinc-400 hover:text-white transition-colors bg-zinc-900/60 border border-zinc-800/80 px-4 py-2 rounded-xl backdrop-blur-md"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -297,7 +297,7 @@ export default function PrivacyPolicy() {
       <footer className="w-full max-w-5xl mx-auto px-6 py-8 flex flex-col md:flex-row justify-between items-center border-t border-zinc-900/60 text-zinc-500 text-sm z-10 gap-4">
         <span>© {new Date().getFullYear()} InboxHire. All rights reserved. Your Gmail search CRM.</span>
         <div className="flex space-x-6 text-zinc-500">
-          <Link href="/" className="hover:text-zinc-300 transition-colors">Home</Link>
+          <Link href="/home" className="hover:text-zinc-300 transition-colors">Home</Link>
           <span>•</span>
           <Link href="/privacy" className="hover:text-zinc-300 transition-colors text-zinc-300">Privacy Policy</Link>
         </div>
